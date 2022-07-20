@@ -137,18 +137,31 @@ def extract_answers(request):
         # Get the selected choice ids from the submission record
         # For each selected choice, check if it is a correct answer or not
         # Calculate the total score
+
 def show_exam_result(request, course_id, submission_id):
     context = {}
     context['course'] = get_object_or_404(Course, pk=course_id)
     submission = get_object_or_404(Submission, pk=submission_id)
     choices = submission.choices.all()
     score = 0
-    for choice in choices:
-        if choice.is_correct:
-            score += 1
+    total = 0
+    questions = []
+    selected_ids = [choice.id for choice in choices]
 
-    context['seleted_choice'] = choices
-    context['grade'] = score
+    for choice in choices:
+        question = choice.question    
+        if question not in questions:
+            total += question.grade
+            questions.append(question)
+
+            if question.is_get_score(selected_ids):
+                score += question.grade
+
+    context['submission'] = submission
+    context['questions'] = questions
+    context['user'] = request.user
+    context['selected_ids'] = selected_ids
+    context['grade'] = round(score/total * 100, 2)
 
     return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
 

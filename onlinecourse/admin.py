@@ -24,7 +24,7 @@ class ChoiceAdmin(admin.ModelAdmin):
 
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [ChoiceInline]
-    list_display = ['lesson', 'question_text']
+    list_display = ['lesson', 'question_text', 'grade']
 
 class LessonAdmin(admin.ModelAdmin):
     list_display = ['title']
